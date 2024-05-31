@@ -1,0 +1,284 @@
+# Exercice 1
+#########################################################
+
+# question 1
+#########################################################
+
+
+la clé primaire de la table City est (ID)
+la clé primaire de la table Country est (Code)
+la clé primaire de la table CountryLanguage est (CountryCode, Language)
+
+les clés étrangères sont au nombre de trois et sont ci-dessous soulignées en pointillés :
+
+CountryLanguage.CountryCode = Country.Code
+Country. Capital = City.ID
+City.CountryCode = Country.Code
+
+
+
+
+
+
+# question 2
+########################################################
+
+
+CREATE TABLE City
+( ID INT (11) NOT NULL,
+ CountryCode CHAR(3) NOT NULL,
+ Name CHAR(35) NOT NULL,
+ District CHAR(20) NOT NULL,
+ Population INT(11) NOT NULL,
+ PRIMARY KEY(ID) ) ;
+ 
+ 
+ 
+ CREATE TABLE CountryLanguage
+( CountryCode CHAR(3) NOT NULL,
+ Language CHAR(30) NOT NULL,
+ IsOfficial ENUM('T','F') NOT NULL,
+ Percentage FLOAT (4,1) NOT NULL,
+ PRIMARY KEY( CountryCode, Language)
+) ; 
+
+
+CREATE TABLE Country
+(Code CHAR(3) NOT NULL PRIMARY KEY,
+ Name CHAR(52) NOT NULL,
+ Continent ENUM('Africa','Europe','Amerique','Asie','Oceanie') NOT NULL,
+ Region CHAR(26) NOT NULL,
+ SurfaceArea FLOAT(10,2) NOT NULL,
+ IndepYear SMALLINT(6),
+ Population INT(11) NOT NULL,
+ LifeExpectancy FLOAT(3,1), 
+ GNP FLOAT(10,2),
+ LocalName CHAR(45) NOT NULL,
+ GovernmentForm CHAR(45) NOT NULL,
+ HeadOfState CHAR(60),
+ Capital INT(11),
+ Code2 CHAR(2) NOT NULL,
+ FOREIGN KEY (Capital) REFERENCES City (ID),
+ 
+ 
+ ) ;
+
+ ALTER TABLE CountryLanguage
+ ADD FOREIGN KEY ( CountryCode) REFERENCES Country (Code) ; 
+ 
+ ALTER TABLE City
+ ADD FOREIGN KEY ( CountryCode ) REFERENCES Country (Code) ; 
+ 
+# question 3
+########################################################
+
+# a)
+#############################
+  
+INSERT INTO Country ( Code, Name, Continent , Region, SurfaceArea, IndepYear, Population,
+LifeExpectancy, LocalName, GovernmentForm, Capital, Code2)
+
+VALUES
+('BEL', 'Belgium', 'Europe', 'Western Europe', 30518.00, 1830, 10239000, 77.8, 'Belge/Belgique',
+'Constitutional Monarchy, Federation',179,'BE'),
+
+('BEN', 'Benin', 'Africa', 'Western Africa', 112622.00, 1960, 6097000, 50.2, 'Bénin',
+'Republic',187,'BJ'),
+
+('FRA', 'France', 'Europe', 'Western Europe', 551500.00, 843, 59225700, 78.8, 'France',
+'Republic', 2974,'FR')
+
+; 
+
+##### Commentaires : il faut mettre NULL pour les valeurs de Capital car il y'a un problème de dépendance. On n'a pas encore les capitales qui sont crées.
+
+
+# b)
+##############################
+
+INSERT INTO Country ( Code, Name, Continent , Region, SurfaceArea, IndepYear, Population,
+LifeExpectancy, LocalName, GovernmentForm, Capital, Code2)
+
+VALUES
+('BEL', 'Belgium', 'Europe', 'Western Europe', 30518.00, 1830, 10239000, 77.8, 'Belge/Belgique',
+'Constitutional Monarchy, Federation',NULL,'BE'),
+
+('BEN', 'Benin', 'Africa', 'Western Africa', 112622.00, 1960, 6097000, 50.2, 'Bénin',
+'Republic',NULL,'BJ'),
+
+('FRA', 'France', 'Europe', 'Western Europe', 551500.00, 843, 59225700, 78.8, 'France',
+'Republic', NULL,'FR')
+
+; 
+
+# c)
+##############################
+
+INSERT INTO City (ID, Name, CountryCode, District, Population)
+
+VALUES
+(178, 'Liège','BEL','Liège',185639),
+
+(179, 'Bruxelles [Brussel]', 'BEL','Bryssel',133859),
+
+(187, 'Porto-Novo', 'BEN','Ouémé',194000),
+
+(2974, 'Paris', 'FRA', 'île-de-France', 2125246)
+
+;
+
+
+# d)
+##############################
+
+UPDATE Country
+
+SET Capital = 179 WHERE Code = 'BEL'; 
+
+UPDATE Country
+
+SET Capital = 187 WHERE Code = 'BEN'; 
+
+UPDATE Country
+
+SET Capital = 2974 WHERE Code = 'FRA'; 
+
+
+# e)
+#############################
+
+INSERT INTO CountryLanguage (CountryCode, Language, IsOfficial, Percentage)
+
+VALUES
+('BEN','Ful','F',5.6),
+
+('BEL','French','T',32.6),
+
+('FRA','French','T',93.6),
+
+('BEL','Arabic', 'F', 1.6),
+
+('FRA','Arabic','F',2.5)
+
+;
+
+# Exercice 2
+##############################
+
+# question 1
+##############################
+
+CREATE TABLE Artiste 
+( nom CHAR(50) NOT NULL PRIMARY KEY ,
+  genre ENUM('M','F'), 
+  nationalité CHAR(50)
+  );
+  
+# question 2
+##############################
+
+CREATE TABLE Album
+(titre CHAR(100) NOT NULL PRIMARY KEY, 
+ année INT(4) NOT NULL DEFAULT 2004,
+ artiste CHAR(50), 
+ FOREIGN KEY (artiste) REFERENCES Artiste(nom)
+ );
+
+# question 3
+##############################
+
+CREATE TABLE Chanson
+(titre CHAR(50) NOT NULL PRIMARY KEY,
+ album CHAR(50); 
+ numéro INT(10) NULL, 
+ durée INT(10), 
+ UNIQUE(album,numéro),
+ FOREIGN KEY(album) REFERENCES Album(titre)
+ );
+ 
+# question 4
+##############################
+
+INSERT INTO Artiste(nom, genre,nationalité)
+
+VALUES
+('Johnny Hallyday','M','Française'),
+
+('David Guetta ','M','Française')
+
+; 
+
+INSERT INTO Album(titre, année, artiste)
+
+VALUES
+('Listen', 2014,'David Guetta '),
+
+('Rester vivant',2015,'Johnny Hallyday')
+;
+ 
+INSERT INTO Chanson(titre, album)
+
+VALUES
+('Regarde-Nous', 'Rester vivant'),
+
+('Te manquer','Rester vivant'), 
+
+('Dangerous', 'Listen'),
+
+('No Money No Love', 'Listen')
+
+; 
+
+# question 5
+###############################
+
+SELECT titre, durée
+
+FROM Chanson JOIN Artiste ON 
+
+ 
+# TP2
+###########################################
+
+# Exercice 1
+###########################################
+
+# question 1:
+##########################################
+
+SELECT nom, prénom
+FROM VOYAGES.CLIENT c
+WHERE c.ville IN ('NANCY','METZ');
+
+# question 2
+#########################################
+
+SELECT codeV, villeDestination
+FROM VOYAGES.VOYAGE v
+WHERE v.durée > 3 AND v.prixBillet < 100 ; 
+
+# question 3
+#########################################
+
+SELECT numC, nom 
+FROM VOYAGES.CLIENT c
+JOIN VOYAGES.RESERVATION r USING (numC)
+WHERE r.dateRes = '2005-11-12';
+
+# question 4
+########################################
+
+SELECT nom,prénom, adresse
+FROM VOYAGES.CLIENT c
+JOIN VOYAGES.RESERVATION r USING (numC)
+JOIN VOYAGES.VOYAGE v USING (codeV)
+WHERE v.villeDestination = 'NICE' AND v.prixBillet < 200 ; 
+
+# question 5
+########################################
+
+SELECT nom, prénom, adresse
+FROM VOYAGES.CLIENT c
+WHERE c.numC NOT IN (SELECT 
+
+ 
