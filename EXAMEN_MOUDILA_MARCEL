@@ -1,0 +1,95 @@
+######## Examen de TP ##########
+
+# MOUDILA MARCEL 
+
+##### question 1
+
+SELECT Continent, AVG(LifeExpectancy) AS EspMoyenne, SUM(Population) AS totalPop
+FROM Country
+GROUP BY Continent 
+HAVING AVG(LifeExpectancy) > 70 ; 
+
+##### question 2
+
+SELECT Continent, SUM(GNP) AS totalGNP
+FROM Country
+GROUP BY Continent
+HAVING SUM(GNP) > 5*POWER(10,3);
+
+##### question 3
+
+CREATE VIEW VueLO (codePays,nomPays, nbLO) AS
+(SELECT C.Code AS codePays,C.Name AS nomPays, COUNT(CL.Language) AS nbLO
+FROM  Country C JOIN CountryLanguage CL ON C.Code = CL.CountryCode
+WHERE CL.IsOfficial = 'T'
+GROUP BY C.Code, C.Name ); 
+
+##### question 4
+
+SELECT C.Name AS nomPays, COUNT(CL.Language) AS nbLO
+FROM  Country C JOIN CountryLanguage CL ON C.Code = CL.CountryCode
+WHERE CL.IsOfficial = 'T'
+GROUP BY C.Code, C.Name 
+HAVING COUNT(CL.Language) >=2 
+ORDER BY COUNT(CL.Language) DESC , C.Name ;  
+
+
+
+##### question 5
+
+SELECT COUNT(C.Code) AS nbPays
+FROM  Country C JOIN CountryLanguage CL ON C.Code = CL.CountryCode
+WHERE CL.IsOfficial = 'T'
+GROUP BY C.Code, C.Name 
+HAVING COUNT(CL.Language) = 1
+HAVING CL.Percentage < 20 ; 
+
+##### question 6
+
+SELECT C.Name AS nomPays, C.Capital AS nomCapitale, City.Population AS populationCapitale
+FROM Country C JOIN City ON C.Code = City.CountryCode
+AND C.capital = City.ID
+WHERE C.Continent = 'Africa'
+AND City.Population = MAX(City.Population)
+AND City.Name != C.Capital ;
+
+
+##### question 7
+
+SELECT ROUND(SUM(C.Population*CL.percentage/100)/POWER(10,6))*POWER(10,6) AS totalFr
+FROM Country C JOIN CountryLanguage CL ON C.Code = CL.CountryCode
+WHERE CL.Language = 'French';
+
+##### question 8
+
+
+SELECT CL.Language AS Langue,ROUND(SUM(C.Population*CL.percentage/100)/POWER(10,6))*POWER(10,6) AS totalLangue
+FROM Country C JOIN CountryLanguage CL ON C.Code = CL.CountryCode
+GROUP BY CL.Language 
+ORDER BY totalLangue DESC
+LIMIT  10 ; 
+
+##### question 9
+
+SELECT GovernmentForm
+FROM Country
+WHERE Continent = 'Europe'
+AND GovernmentForm NOT IN (SELECT GovernmentForm
+FROM Country
+WHERE Continent = 'Asia' ); 
+
+##### question 10
+
+ALTER TABLE CountryLanguage
+SET Percentage IS NULL
+WHERE Percentage = 0 ; 
+
+##### question 11
+
+SELECT C.Code, C.Name
+FROM Country C JOIN City ON C.Code = City.CountryCode
+AND C.capital = City.ID
+GROUP BY C.Code
+HAVING SUM(City.Population) <= C.Population ; 
+
+
